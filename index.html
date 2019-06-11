@@ -6,19 +6,36 @@
 <style type="text/css">
 body, #main {
   width: 100%;
-  height: 100%;
-  display: flex;
-}
-#main webview {
   height: 100vh;
-  flex: 1;
+  margin: 0;
+  padding: 0;
+}
+#main {
+  display: flex;
+  flex-direction: column;
+}
+
+#sq688 {
+  flex: 1;  
+}
+
+#toolbar {
+  padding: 10px;
+}
+
+#toolbar button {
+  padding: 5px 10px;
 }
 </style>
   </head>
   <body>
     <div id="main">
+      <div id="toolbar">
+        <button id="btn-pan">Open Baidu pan</button>
+        <button id="btn-sq688">Open SQ688</button>
+      </div>
       <webview id="sq688" src="https://www.sq688.com" disablewebsecurity></webview>
-      <webview id="pan" src="https://pan.baidu.com"></webview>
     </div>
   </body>
+  <script type="text/javascript" src="./web.js"></script>
 </html>
