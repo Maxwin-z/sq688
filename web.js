@@ -7,6 +7,10 @@ function setNavigationStatus() {
   $('#btn-forward').attr('disabled', !webview.canGoForward())
 }
 
+$('#btn-devtools').click(() => {
+  webview.openDevTools()
+})
+
 $('#btn-pan').click(() => {
   webview.loadURL('https://pan.baidu.com')
 })
