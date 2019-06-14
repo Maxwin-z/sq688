@@ -1,6 +1,8 @@
 const $ = require('./jquery-3.4.1.js')
 const webview = $('#sq688').get(0)
 
+let songs = [] // save selected songs
+
 function setNavigationStatus() {
   console.log('<>', webview.canGoBack(), webview.canGoForward())
   $('#btn-back').attr('disabled', !webview.canGoBack())
@@ -37,6 +39,10 @@ $('#btn-songlist').click(function() {
   }
 })
 
+$('#btn-download').click(async () => {
+  download()
+})
+
 webview.addEventListener('dom-ready', () => {
   console.log('ready')
 })
@@ -52,10 +58,18 @@ webview.addEventListener('new-window', (e) => {
 
 webview.addEventListener('ipc-message', ({channel, args}) => {
   if (channel === 'songlist') {
-    const songs = args[0]
+    songs = args[0]
     const lis = songs.map((song) => $('<li>').text(song.name))
     $('#songlist')
       .html('')
       .append($('<ul>').append(lis))
+
+    $('#btn-download').text(`Download(${songs.length})`)
   }
 })
+
+function download() {
+  return new Promise((resolve, reject) => {
+    webview.loadURL('https://www.sq688.com/download/15707.html')
+  })
+}
