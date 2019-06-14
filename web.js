@@ -35,3 +35,7 @@ webview.addEventListener('did-navigate', () => {
   console.log('did-navigate')
   setNavigationStatus()
 })
+
+webview.addEventListener('new-window', (e) => {
+  webview.loadURL(e.url)
+})
