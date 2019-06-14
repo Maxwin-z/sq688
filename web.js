@@ -27,6 +27,16 @@ $('#btn-forward').click(() => {
   webview.goForward()
 })
 
+$('#btn-songlist').click(function() {
+  if ($(this).text() === 'Hidden') {
+    $(this).text('Show')
+    $('#songlist').hide()
+  } else {
+    $(this).text('Hidden')
+    $('#songlist').show()
+  }
+})
+
 webview.addEventListener('dom-ready', () => {
   console.log('ready')
 })
