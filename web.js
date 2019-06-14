@@ -1,4 +1,3 @@
-const {ipcRenderer} = require('electron')
 const $ = require('./jquery-3.4.1.js')
 const webview = $('#sq688').get(0)
 
@@ -51,6 +50,10 @@ webview.addEventListener('new-window', (e) => {
   webview.loadURL(e.url)
 })
 
-ipcRenderer.on('songlist', (event, args) => {
-  console.log(event, args)
+webview.addEventListener('ipc-message', ({channel, args}) => {
+  if (channel === 'songlist') {
+    const songs = args[0]
+    console.log(songs)
+    $('#songlist').html(JSON.stringify(songs))
+  }
 })

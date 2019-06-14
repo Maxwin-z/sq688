@@ -33,7 +33,7 @@ const onCheckboxClick = (function() {
       }
     }
     lastSelectedIndex = index
-    ipcRenderer.send('songlist', {
+    ipcRenderer.sendToHost('songlist', {
       index
     })
   }
