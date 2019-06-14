@@ -33,9 +33,7 @@ const onCheckboxClick = (function() {
       }
     }
     lastSelectedIndex = index
-    ipcRenderer.sendToHost('songlist', {
-      index
-    })
+    getSongs()
   }
 })()
 
@@ -55,5 +53,23 @@ function addCheckbox() {
       a.insertBefore(checkbox, a.firstChild)
       $(checkbox).click(onCheckboxClick)
     }
+  })
+}
+
+function getSongs() {
+  const songs = []
+  ;[...document.querySelectorAll('input[data-sqdindex]')].forEach(
+    (checkbox) => {
+      if (checkbox.checked) {
+        const name = $(checkbox)
+          .parent('a')
+          .text()
+        const id = checkbox.value
+        songs.push({id, name})
+      }
+    }
+  )
+  ipcRenderer.sendToHost('songlist', {
+    songs
   })
 }
