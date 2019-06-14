@@ -1,4 +1,5 @@
 console.log('preload')
+const {ipcRenderer} = require('electron')
 
 process.once('document-start', () => {
   console.log('document start')
@@ -32,6 +33,9 @@ const onCheckboxClick = (function() {
       }
     }
     lastSelectedIndex = index
+    ipcRenderer.send('songlist', {
+      index
+    })
   }
 })()
 
