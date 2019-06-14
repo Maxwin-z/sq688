@@ -69,7 +69,5 @@ function getSongs() {
       }
     }
   )
-  ipcRenderer.sendToHost('songlist', {
-    songs
-  })
+  ipcRenderer.sendToHost('songlist', songs)
 }

@@ -53,7 +53,9 @@ webview.addEventListener('new-window', (e) => {
 webview.addEventListener('ipc-message', ({channel, args}) => {
   if (channel === 'songlist') {
     const songs = args[0]
-    console.log(songs)
-    $('#songlist').html(JSON.stringify(songs))
+    const lis = songs.map((song) => $('<li>').text(song.name))
+    $('#songlist')
+      .html('')
+      .append($('<ul>').append(lis))
   }
 })
