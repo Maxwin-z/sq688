@@ -41,6 +41,9 @@ const onCheckboxClick = (function() {
 function addCheckbox() {
   let index = 0 // 给歌标号，方便多选
   ;[...document.querySelectorAll('a')].forEach((a) => {
+    if (a.className === 'dw') {
+      return
+    }
     const [_, id] =
       a.href.match(/^https:\/\/www\.sq688\.com\/download\/(\d+)\.html/i) || []
     console.log(a.href, id)
