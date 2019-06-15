@@ -130,11 +130,11 @@ function fetchPanInfo(id) {
 }
 async function save2pan(pans, folder) {
   for (let i = 0; i < pans.length; ++i) {
+    $('#info').html(`转存完成${i}/${pans.length}`)
     const pan = pans[i]
     if (pan.url) {
       const success = await _save(pans[i], folder)
       $($('#songlist li').get(i)).append(success ? '✅' : '❌')
-      $('#info').html(`转存完成${i}/${pans.length}`)
     }
   }
 }
