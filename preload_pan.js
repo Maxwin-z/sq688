@@ -1,8 +1,9 @@
+const {ipcRenderer} = require('electron')
 function waitForSelector(selector, timeout = 10000) {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
-      reject('timeout', timeout)
-    })
+      reject('timeout')
+    }, timeout)
     const look = () => {
       const element = document.querySelector(selector)
       if (element) {
@@ -26,7 +27,18 @@ window.getPassword = async (password, folder) => {
     buttonForPick.click()
     buttonForSave = await waitForSelector('a[title="保存到网盘"]')
   }
-  if (buttonForSave) {
-    console.log('can save now')
+  buttonForSave.click()
+  const buttonForCreate = await waitForSelector('a[title="新建文件夹"]')
+  console.log('buttonForCreate', buttonForCreate)
+  let panFolder = document.querySelector(`span[node-path="/${folder}"]`)
+  if (!panFolder) {
+    buttonForCreate.click()
+    const newFolderInput = await waitForSelector('.shareFolderInput')
+    newFolderInput.value = folder
+    document.querySelector('.shareFolderConfirm').click()
+    panFolder = await waitForSelector(`span[node-path="/${folder}"]`)
   }
+  panFolder.click()
+  document.querySelector('.dialog-fileTreeDialog a[title="确定"]').click()
+  ipcRenderer.sendToHost('pan_saved', {})
 }

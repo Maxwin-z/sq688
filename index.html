@@ -35,8 +35,19 @@ body, #main {
   right: 0;
   width: 300px;
   height: 500px;
+  padding: 10px;
   overflow: auto;
   background: white;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+#songlist input {
+  border: 1px solid #ccc;
+  font-size: 120%;
+}
+#songlist ul {
+  margin: 20px 0 0 0;
+  padding: 0;
 }
 </style>
   </head>
@@ -53,7 +64,14 @@ body, #main {
         <button id="btn-download">Download</button>
       </div>
       <webview id="sq688" preload="./preload.js" src="https://www.sq688.com" disablewebsecurity></webview>
-      <div id="songlist"></div>
+      <div id="songlist">
+        <div>
+          <label>将音乐保存到文件夹：<br />
+            sq688_<input id="folder" /></label>
+        </div>
+        <div id="info"></div>
+        <ol></ol> 
+      </div>
     </div>
   </body>
   <script type="text/javascript" src="./web.js"></script>
