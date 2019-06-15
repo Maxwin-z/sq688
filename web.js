@@ -3,6 +3,12 @@ const webview = $('#sq688').get(0)
 
 let songs = [] // save selected songs
 
+function sleep(t) {
+  return new Promise((rs) => {
+    setTimeout(rs, t)
+  })
+}
+
 function setNavigationStatus() {
   console.log('<>', webview.canGoBack(), webview.canGoForward())
   $('#btn-back').attr('disabled', !webview.canGoBack())
@@ -40,7 +46,11 @@ $('#btn-songlist').click(function() {
 })
 
 $('#btn-download').click(async () => {
-  download()
+  const pans = []
+  for (let i = 0; i < songs.length; ++i) {
+    pans.push(await download(songs[i].id))
+  }
+  console.log('get pans', pans)
 })
 
 webview.addEventListener('dom-ready', () => {
@@ -68,8 +78,39 @@ webview.addEventListener('ipc-message', ({channel, args}) => {
   }
 })
 
-function download() {
+function download(id) {
   return new Promise((resolve, reject) => {
-    webview.loadURL('https://www.sq688.com/download/15707.html')
+    const timeoutTimer = setTimeout(() => {
+      reject('timeout')
+      doClean()
+    }, 100000 * 1000)
+
+    let webview = document.createElement('webview')
+    $(webview).css({
+      position: 'fixed',
+      top: '100px',
+      left: 0,
+      width: '500px',
+      height: '500px',
+      border: '1px solid red'
+    })
+    webview.setAttribute('disablewebsecurity', true)
+    webview.setAttribute('preload', './preload_sq_download.js')
+    webview.setAttribute('src', `https://www.sq688.com/download/${id}.html`)
+    webview.addEventListener('dom-ready', () => {
+      webview.openDevTools()
+    })
+    webview.addEventListener('ipc-message', ({channel, args}) => {
+      if (channel === 'pan_info') {
+        clearTimeout(timeoutTimer)
+        resolve(args[0])
+        doClean()
+      }
+    })
+    document.body.appendChild(webview)
+    function doClean() {
+      document.body.removeChild(webview)
+      webview = null
+    }
   })
 }
