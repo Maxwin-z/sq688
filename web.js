@@ -46,11 +46,14 @@ $('#btn-songlist').click(function() {
 })
 
 $('#btn-download').click(async () => {
+  /*
   const pans = []
   for (let i = 0; i < songs.length; ++i) {
     pans.push(await download(songs[i].id))
   }
   console.log('get pans', pans)
+  */
+  save2pan()
 })
 
 webview.addEventListener('dom-ready', () => {
@@ -105,6 +108,47 @@ function download(id) {
         clearTimeout(timeoutTimer)
         resolve(args[0])
         doClean()
+      }
+    })
+    document.body.appendChild(webview)
+    function doClean() {
+      document.body.removeChild(webview)
+      webview = null
+    }
+  })
+}
+
+function save2pan() {
+  const pan = {
+    password: 'dj3p',
+    url: 'https://pan.baidu.com/s/1dL9wduE6mx3r4h64ucVSSA'
+  }
+  return new Promise((resolve, reject) => {
+    const timeoutTimer = setTimeout(() => {
+      reject('timeout')
+      doClean()
+    }, 100000 * 1000)
+
+    let webview = document.createElement('webview')
+    $(webview).css({
+      position: 'fixed',
+      top: '100px',
+      left: 0,
+      width: '500px',
+      height: '500px',
+      border: '1px solid red'
+    })
+    webview.setAttribute('disablewebsecurity', true)
+    webview.setAttribute('preload', './preload_pan.js')
+    webview.setAttribute('src', pan.url)
+    webview.addEventListener('dom-ready', () => {
+      webview.openDevTools()
+      webview.executeJavaScript(`getPassword('${pan.password}')`)
+    })
+    webview.addEventListener('ipc-message', ({channel, args}) => {
+      if (channel === 'pan_info') {
+        clearTimeout(timeoutTimer)
+        resolve(args[0])
       }
     })
     document.body.appendChild(webview)
