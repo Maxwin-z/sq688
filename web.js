@@ -1,5 +1,6 @@
 const $ = require('./jquery-3.4.1.js')
 const webview = $('#sq688').get(0)
+let DEBUG = false
 
 let songs = [] // save selected songs
 
@@ -17,6 +18,7 @@ function setNavigationStatus() {
 
 $('#btn-devtools').click(() => {
   webview.openDevTools()
+  DEBUG = true
 })
 
 $('#btn-pan').click(() => {
@@ -57,7 +59,13 @@ $('#btn-download').click(async () => {
   const pans = []
   for (let i = 0; i < songs.length; ++i) {
     $('#info').html(`🔍正在获取百度盘链接${i}/${songs.length}`)
-    pans.push(await fetchPanInfo(songs[i].id))
+    const pan = await fetchPanInfo(songs[i].id)
+    if (pan.url) {
+      pans.push(pan)
+      $($('#songlist li').get(i)).append('🔗')
+    } else {
+      $($('#songlist li').get(i)).append('❌')
+    }
   }
   console.log('get pans', pans)
   $('#info').html('开始转存')
@@ -87,9 +95,10 @@ webview.addEventListener('ipc-message', ({channel, args}) => {
 function fetchPanInfo(id) {
   return new Promise((resolve, reject) => {
     const timeoutTimer = setTimeout(() => {
-      reject('timeout')
+      // reject('timeout')
+      resolve({})
       doClean()
-    }, 100000 * 1000)
+    }, 10 * 1000)
     let webview = document.createElement('webview')
     $(webview).css({
       position: 'fixed',
@@ -103,7 +112,7 @@ function fetchPanInfo(id) {
     webview.setAttribute('preload', './preload_sq_download.js')
     webview.setAttribute('src', `https://www.sq688.com/download/${id}.html`)
     webview.addEventListener('dom-ready', () => {
-      webview.openDevTools()
+      DEBUG && webview.openDevTools()
     })
     webview.addEventListener('ipc-message', ({channel, args}) => {
       if (channel === 'pan_info') {
@@ -121,16 +130,22 @@ function fetchPanInfo(id) {
 }
 async function save2pan(pans, folder) {
   for (let i = 0; i < pans.length; ++i) {
-    await _save(pans[i], folder)
-    $($('#songlist li').get(i)).append('✅')
+    const pan = pans[i]
+    if (pan.url) {
+      const success = await _save(pans[i], folder)
+      $($('#songlist li').get(i)).append(success ? '✅' : '❌')
+      $('#info').html(`转存完成${i}/${pans.length}`)
+    }
   }
 }
 function _save(pan, folder) {
   return new Promise((resolve, reject) => {
     const timeoutTimer = setTimeout(() => {
-      reject('timeout')
+      // reject('timeout')
+      console.log('timeout', pan)
+      resolve(false)
       doClean()
-    }, 100000 * 1000)
+    }, 10 * 1000)
     let webview = document.createElement('webview')
     $(webview).css({
       position: 'fixed',
@@ -143,13 +158,14 @@ function _save(pan, folder) {
     webview.setAttribute('disablewebsecurity', true)
     webview.setAttribute('preload', './preload_pan.js')
     webview.addEventListener('dom-ready', () => {
-      webview.openDevTools()
+      DEBUG && webview.openDevTools()
       webview.executeJavaScript(`getPassword('${pan.password}', '${folder}')`)
     })
-    webview.addEventListener('ipc-message', ({channel}) => {
+    webview.addEventListener('ipc-message', ({channel, args}) => {
       if (channel === 'pan_saved') {
         clearTimeout(timeoutTimer)
-        resolve()
+        const success = args[0]
+        resolve(success)
         doClean()
       }
     })

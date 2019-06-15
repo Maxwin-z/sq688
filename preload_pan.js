@@ -19,6 +19,11 @@ function waitForSelector(selector, timeout = 10000) {
 
 window.getPassword = async (password, folder) => {
   console.log(`get ${password}`)
+  const errorContainer = document.querySelector('.share-error-left')
+  if (errorContainer) {
+    ipcRenderer.sendToHost('pan_saved', false)
+    return
+  }
   const inputForPassword = document.querySelector('.pickpw input')
   const buttonForPick = document.querySelector('.pickpw .g-button')
   let buttonForSave = document.querySelector('a[title="保存到网盘"')
@@ -40,5 +45,5 @@ window.getPassword = async (password, folder) => {
   }
   panFolder.click()
   document.querySelector('.dialog-fileTreeDialog a[title="确定"]').click()
-  ipcRenderer.sendToHost('pan_saved', {})
+  ipcRenderer.sendToHost('pan_saved', true)
 }
